@@ -2,7 +2,7 @@
 ##Вводимые данные
 $ScopeName = Read-host 'Insert scope name'
 $Mask = Read-host 'Insert Network address, example like 192.168.0.0/24'
-$excludeIP = Read-host 'How many adresses we need to exclude?'
+$excludeIP = Read-host 'Number of adresses we need to exclude?'
 $Descript = Read-host 'What is this scope VLAN ID?'
 $dhcpServers = Get-DhcpServerInDC | select dnsname
 if ([int]$dhcpServers.Count -eq '0') {
