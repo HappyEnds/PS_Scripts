@@ -1,4 +1,5 @@
-﻿##Вводимые данные
+﻿
+##Вводимые данные
 $ScopeName = Read-host 'Insert scope name'
 $Mask = Read-host 'Insert Network address, example like 192.168.0.0/24'
 $excludeIP = Read-host 'Number of adresses we need to exclude?'
