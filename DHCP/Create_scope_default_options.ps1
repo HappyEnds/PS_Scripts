@@ -1,9 +1,8 @@
-﻿
-##Вводимые данные
-$ScopeName = Read-host 'Как назовём scope?'
-$Mask = Read-host 'Сетку в формате 192.168.0.0\24 пожалуйста'
-$excludeIP = Read-host 'Сколько адресов исключить'
-$Descript = Read-host 'Какому VLAN отдаём скоп? соблюдаем формат 000!'
+﻿##Вводимые данные
+$ScopeName = Read-host 'Insert scope name'
+$Mask = Read-host 'Insert Network address, example like 192.168.0.0/24'
+$excludeIP = Read-host 'Number of adresses we need to exclude?'
+$Descript = Read-host 'What is this scope VLAN ID?'
 $dhcpServers = Get-DhcpServerInDC | select dnsname
 if ([int]$dhcpServers.Count -eq '0') {
 $iCount = [int]$dhcpServers.Count + 1
@@ -17,7 +16,7 @@ $dhcp = @{Name = $dhcpServer.dnsname; ServerID = $ID}
 $dhcp
 $ID++
  }
-$dhcpServerID = Read-host 'Server ID одного из предложенных серверов пожалуйста'
+$dhcpServerID = Read-host 'Copy and paste here one of the DHCP Servers from list, where you want to create scope'
 ##Получаем опцию dns и определяем есть ли failover сервер
 $dns = Get-DhcpServerv4OptionValue -ComputerName $dhcpServers[$dhcpServerID].dnsname -OptionId 6
 $Failover = Get-DhcpServerv4Failover -ComputerName $dhcpServers[$dhcpServerID].dnsname -ErrorAction ignore
@@ -51,12 +50,12 @@ $dns = [string]$dns.value[0]
 $Descript = "Vlan " + $VlanID
 $leaseDur = "7.00:00:00"
 ##Вывод получившихся значений для проверки (А то вдруг скрипт разучился считать или вы что-то ввели неправильно)
-Write-Host $StartIP ' - Первый IP в сети'  -ForegroundColor Green
-Write-Host $EndIP ' - Последний IP Сети'  -ForegroundColor Green
-Write-Host $Router ' - Gateway Адрес' -ForegroundColor Green
-Write-Host $MaskIP ' - IP Маски' -ForegroundColor Green
-Write-Host $dom ' - DNS Имя домена' -ForegroundColor Green
-Write-Host $dns ' - DNS Серверы' -ForegroundColor Green
+Write-Host $StartIP ' - 1-st scope IP'  -ForegroundColor Green
+Write-Host $EndIP ' - Last scope IP '  -ForegroundColor Green
+Write-Host $Router ' - Gateway' -ForegroundColor Green
+Write-Host $MaskIP ' - Mask IP' -ForegroundColor Green
+Write-Host $dom ' - Domain DNS Name' -ForegroundColor Green
+Write-Host $dns ' - DNS Servers' -ForegroundColor Green
 ##Тут просто создается scope и добавляются опции
 Add-DhcpServerv4Scope -Name $ScopeName -StartRange $StartIP -EndRange $EndIP -SubnetMask $MaskIP -LeaseDuration $LeaseDur -ComputerName $dhcpServers[$dhcpServerID].dnsname -Description $Descript
 Start-Sleep -Seconds 3
@@ -67,5 +66,5 @@ if ($Failover -ne $null) {
 Add-DhcpServerv4FailoverScope -Name $FailoverName -ScopeId $name.ScopeId.IPAddressToString -ComputerName $dhcpServers[$dhcpServerID].dnsname
 }
 else {
-Write-Host 'Отказоустойчивые конфигурации не найдены и не будут созданы' -ForegroundColor Red
+Write-Host 'We couldnt find any failover configurations on this server and create single server scope' -ForegroundColor Red
 }
