@@ -67,5 +67,5 @@ if ($Failover -ne $null) {
 Add-DhcpServerv4FailoverScope -Name $FailoverName -ScopeId $name.ScopeId.IPAddressToString -ComputerName $dhcpServers[$dhcpServerID].dnsname
 }
 else {
-Write-Host 'We couldn't find any failover configurations on this server and create single server scope' -ForegroundColor Red
+Write-Host 'We couldnt find any failover configurations on this server and create single server scope' -ForegroundColor Red
 }
